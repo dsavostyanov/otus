@@ -1,131 +1,264 @@
-# Обновление ядра системы
+# Дисковая подсистема
 ```
-dsavostyanov@ubuntu-otus:~$ uname -r
-6.8.0-54-generic
+dsavostyanov@ubuntu-otus:~$ lsblk
+NAME                      MAJ:MIN RM  SIZE RO TYPE MOUNTPOINTS
+sda                         8:0    0   20G  0 disk
+├─sda1                      8:1    0    1M  0 part
+├─sda2                      8:2    0  1.8G  0 part /boot
+└─sda3                      8:3    0 18.2G  0 part
+  └─ubuntu--vg-ubuntu--lv 252:0    0   10G  0 lvm  /
+sdb                         8:16   0    1G  0 disk
+sdc                         8:32   0    1G  0 disk
+sdd                         8:48   0    1G  0 disk
 
-dsavostyanov@ubuntu-otus:~$ mkdir kernel && cd kernel
+dsavostyanov@ubuntu-otus:~$ sudo mdadm --zero-superblock --force /dev/sd{b,c,d}
+mdadm: Unrecognised md component device - /dev/sdb
+mdadm: Unrecognised md component device - /dev/sdc
+mdadm: Unrecognised md component device - /dev/sdd
+dsavostyanov@ubuntu-otus:~$ sudo mdadm --create --verbose /dev/md0 -l 5 -n 3 /dev/sd{b,c,d}
+mdadm: layout defaults to left-symmetric
+mdadm: layout defaults to left-symmetric
+mdadm: chunk size defaults to 512K
+mdadm: size set to 1046528K
+mdadm: Defaulting to version 1.2 metadata
+mdadm: array /dev/md0 started.
+dsavostyanov@ubuntu-otus:~$ cat /proc/mdstat
+Personalities : [linear] [raid0] [raid1] [raid6] [raid5] [raid4] [raid10]
+md0 : active raid5 sdd[3] sdc[1] sdb[0]
+      2093056 blocks super 1.2 level 5, 512k chunk, algorithm 2 [3/3] [UUU]
 
-dsavostyanov@ubuntu-otus:~/kernel$ wget https://kernel.ubuntu.com/mainline/v6.13.5/amd64/linux-headers-6.13.5-061305-generic_6.13.5-061305.202502271338_amd64.deb
---2025-03-02 13:49:29--  https://kernel.ubuntu.com/mainline/v6.13.5/amd64/linux-headers-6.13.5-061305-generic_6.13.5-061305.202502271338_amd64.deb
-Resolving kernel.ubuntu.com (kernel.ubuntu.com)... 185.125.189.74, 185.125.189.76, 185.125.189.75
-Connecting to kernel.ubuntu.com (kernel.ubuntu.com)|185.125.189.74|:443... connected.
-HTTP request sent, awaiting response... 200 OK
-Length: 3827358 (3.6M) [application/x-debian-package]
-Saving to: ‘linux-headers-6.13.5-061305-generic_6.13.5-061305.202502271338_amd64.deb’
+unused devices: <none>
 
-linux-headers-6.13.5-061305-generic_6.13.5-0613 100%[=====================================================================================================>]   3.65M  2.65MB/s    in 1.4s
 
-2025-03-02 13:49:34 (2.65 MB/s) - ‘linux-headers-6.13.5-061305-generic_6.13.5-061305.202502271338_amd64.deb’ saved [3827358/3827358]
+dsavostyanov@ubuntu-otus:~$ sudo mdadm -D /dev/md0
+/dev/md0:
+           Version : 1.2
+     Creation Time : Wed Mar 12 20:51:35 2025
+        Raid Level : raid5
+        Array Size : 2093056 (2044.00 MiB 2143.29 MB)
+     Used Dev Size : 1046528 (1022.00 MiB 1071.64 MB)
+      Raid Devices : 3
+     Total Devices : 3
+       Persistence : Superblock is persistent
 
-dsavostyanov@ubuntu-otus:~/kernel$ wget https://kernel.ubuntu.com/mainline/v6.13.5/amd64/linux-headers-6.13.5-061305_6.13.5-061305.202502271338_all.deb
---2025-03-02 13:49:46--  https://kernel.ubuntu.com/mainline/v6.13.5/amd64/linux-headers-6.13.5-061305_6.13.5-061305.202502271338_all.deb
-Resolving kernel.ubuntu.com (kernel.ubuntu.com)... 185.125.189.74, 185.125.189.75, 185.125.189.76
-Connecting to kernel.ubuntu.com (kernel.ubuntu.com)|185.125.189.74|:443... connected.
-HTTP request sent, awaiting response... 200 OK
-Length: 13885596 (13M) [application/x-debian-package]
-Saving to: ‘linux-headers-6.13.5-061305_6.13.5-061305.202502271338_all.deb’
+       Update Time : Wed Mar 12 20:51:40 2025
+             State : clean
+    Active Devices : 3
+   Working Devices : 3
+    Failed Devices : 0
+     Spare Devices : 0
 
-linux-headers-6.13.5-061305_6.13.5-061305.20250 100%[=====================================================================================================>]  13.24M  5.11MB/s    in 2.6s
+            Layout : left-symmetric
+        Chunk Size : 512K
 
-2025-03-02 13:49:50 (5.11 MB/s) - ‘linux-headers-6.13.5-061305_6.13.5-061305.202502271338_all.deb’ saved [13885596/13885596]
+Consistency Policy : resync
 
-dsavostyanov@ubuntu-otus:~/kernel$ https://kernel.ubuntu.com/mainline/v6.13.5/amd64/linux-image-unsigned-6.13.5-061305-generic_6.13.5-061305.202502271338_amd64.deb
--bash: https://kernel.ubuntu.com/mainline/v6.13.5/amd64/linux-image-unsigned-6.13.5-061305-generic_6.13.5-061305.202502271338_amd64.deb: No such file or directory
-dsavostyanov@ubuntu-otus:~/kernel$ wget https://kernel.ubuntu.com/mainline/v6.13.5/amd64/linux-image-unsigned-6.13.5-061305-generic_6.13.5-061305.202502271338_amd64.deb
---2025-03-02 13:50:39--  https://kernel.ubuntu.com/mainline/v6.13.5/amd64/linux-image-unsigned-6.13.5-061305-generic_6.13.5-061305.202502271338_amd64.deb
-Resolving kernel.ubuntu.com (kernel.ubuntu.com)... 185.125.189.75, 185.125.189.76, 185.125.189.74
-Connecting to kernel.ubuntu.com (kernel.ubuntu.com)|185.125.189.75|:443... connected.
-HTTP request sent, awaiting response... 200 OK
-Length: 15882432 (15M) [application/x-debian-package]
-Saving to: ‘linux-image-unsigned-6.13.5-061305-generic_6.13.5-061305.202502271338_amd64.deb’
+              Name : ubuntu-otus:0  (local to host ubuntu-otus)
+              UUID : 8e9d172f:d98235b4:881ba584:2094dcd0
+            Events : 18
 
-linux-image-unsigned-6.13.5-061305-generic_6.13 100%[=====================================================================================================>]  15.15M  3.00MB/s    in 5.1s
+    Number   Major   Minor   RaidDevice State
+       0       8       16        0      active sync   /dev/sdb
+       1       8       32        1      active sync   /dev/sdc
+       3       8       48        2      active sync   /dev/sdd
+	   
+dsavostyanov@ubuntu-otus:~$ sudo mdadm /dev/md0 --fail /dev/sdd
+mdadm: set /dev/sdd faulty in /dev/md0
+dsavostyanov@ubuntu-otus:~$ cat /proc/mdstat
+Personalities : [linear] [raid0] [raid1] [raid6] [raid5] [raid4] [raid10]
+md0 : active raid5 sdd[3](F) sdc[1] sdb[0]
+      2093056 blocks super 1.2 level 5, 512k chunk, algorithm 2 [3/2] [UU_]
 
-2025-03-02 13:50:45 (2.97 MB/s) - ‘linux-image-unsigned-6.13.5-061305-generic_6.13.5-061305.202502271338_amd64.deb’ saved [15882432/15882432]
+unused devices: <none>
 
-dsavostyanov@ubuntu-otus:~/kernel$ wget https://kernel.ubuntu.com/mainline/v6.13.5/amd64/linux-modules-6.13.5-061305-generic_6.13.5-061305.202502271338_amd64.deb
---2025-03-02 13:51:16--  https://kernel.ubuntu.com/mainline/v6.13.5/amd64/linux-modules-6.13.5-061305-generic_6.13.5-061305.202502271338_amd64.deb
-Resolving kernel.ubuntu.com (kernel.ubuntu.com)... 185.125.189.76, 185.125.189.75, 185.125.189.74
-Connecting to kernel.ubuntu.com (kernel.ubuntu.com)|185.125.189.76|:443... connected.
-HTTP request sent, awaiting response... 200 OK
-Length: 191344832 (182M) [application/x-debian-package]
-Saving to: ‘linux-modules-6.13.5-061305-generic_6.13.5-061305.202502271338_amd64.deb’
+dsavostyanov@ubuntu-otus:~$ sudo mdadm -D /dev/md0
+/dev/md0:
+           Version : 1.2
+     Creation Time : Wed Mar 12 20:51:35 2025
+        Raid Level : raid5
+        Array Size : 2093056 (2044.00 MiB 2143.29 MB)
+     Used Dev Size : 1046528 (1022.00 MiB 1071.64 MB)
+      Raid Devices : 3
+     Total Devices : 3
+       Persistence : Superblock is persistent
 
-linux-modules-6.13.5-061305-generic_6.13.5-0613 100%[=====================================================================================================>] 182.48M  2.65MB/s    in 52s
+       Update Time : Wed Mar 12 20:57:07 2025
+             State : clean, degraded
+    Active Devices : 2
+   Working Devices : 2
+    Failed Devices : 1
+     Spare Devices : 0
 
-2025-03-02 13:52:09 (3.49 MB/s) - ‘linux-modules-6.13.5-061305-generic_6.13.5-061305.202502271338_amd64.deb’ saved [191344832/191344832]
+            Layout : left-symmetric
+        Chunk Size : 512K
 
-dsavostyanov@ubuntu-otus:~/kernel$ sudo dpkg -i *.deb
-[sudo] password for dsavostyanov:
-Selecting previously unselected package linux-headers-6.13.5-061305.
-(Reading database ... 86644 files and directories currently installed.)
-Preparing to unpack linux-headers-6.13.5-061305_6.13.5-061305.202502271338_all.deb ...
-Unpacking linux-headers-6.13.5-061305 (6.13.5-061305.202502271338) ...
-Selecting previously unselected package linux-headers-6.13.5-061305-generic.
-Preparing to unpack linux-headers-6.13.5-061305-generic_6.13.5-061305.202502271338_amd64.deb ...
-Unpacking linux-headers-6.13.5-061305-generic (6.13.5-061305.202502271338) ...
-Selecting previously unselected package linux-image-unsigned-6.13.5-061305-generic.
-Preparing to unpack linux-image-unsigned-6.13.5-061305-generic_6.13.5-061305.202502271338_amd64.deb ...
-Unpacking linux-image-unsigned-6.13.5-061305-generic (6.13.5-061305.202502271338) ...
-Selecting previously unselected package linux-modules-6.13.5-061305-generic.
-Preparing to unpack linux-modules-6.13.5-061305-generic_6.13.5-061305.202502271338_amd64.deb ...
-Unpacking linux-modules-6.13.5-061305-generic (6.13.5-061305.202502271338) ...
-Setting up linux-headers-6.13.5-061305 (6.13.5-061305.202502271338) ...
-Setting up linux-headers-6.13.5-061305-generic (6.13.5-061305.202502271338) ...
-Setting up linux-modules-6.13.5-061305-generic (6.13.5-061305.202502271338) ...
-Setting up linux-image-unsigned-6.13.5-061305-generic (6.13.5-061305.202502271338) ...
-I: /boot/vmlinuz is now a symlink to vmlinuz-6.13.5-061305-generic
-I: /boot/initrd.img is now a symlink to initrd.img-6.13.5-061305-generic
-Processing triggers for linux-image-unsigned-6.13.5-061305-generic (6.13.5-061305.202502271338) ...
-/etc/kernel/postinst.d/initramfs-tools:
-update-initramfs: Generating /boot/initrd.img-6.13.5-061305-generic
-/etc/kernel/postinst.d/zz-update-grub:
-Sourcing file `/etc/default/grub'
-Generating grub configuration file ...
-Found linux image: /boot/vmlinuz-6.13.5-061305-generic
-Found initrd image: /boot/initrd.img-6.13.5-061305-generic
-Found linux image: /boot/vmlinuz-6.8.0-54-generic
-Found initrd image: /boot/initrd.img-6.8.0-54-generic
-Warning: os-prober will not be executed to detect other bootable partitions.
-Systems on them will not be added to the GRUB boot configuration.
-Check GRUB_DISABLE_OS_PROBER documentation entry.
-Adding boot menu entry for UEFI Firmware Settings ...
-done
+Consistency Policy : resync
 
-dsavostyanov@ubuntu-otus:~/kernel$  ls -al /boot
-total 193472
-drwxr-xr-x  4 root root     4096 Mar  2 13:56 .
-drwxr-xr-x 23 root root     4096 Mar  2 12:13 ..
--rw-r--r--  1 root root   310720 Feb 27 13:38 config-6.13.5-061305-generic
--rw-r--r--  1 root root   287562 Feb  7 21:09 config-6.8.0-54-generic
-drwxr-xr-x  5 root root     4096 Mar  2 13:56 grub
-lrwxrwxrwx  1 root root       32 Mar  2 13:55 initrd.img -> initrd.img-6.13.5-061305-generic
--rw-r--r--  1 root root 78742093 Mar  2 13:56 initrd.img-6.13.5-061305-generic
--rw-r--r--  1 root root 68750099 Mar  2 12:21 initrd.img-6.8.0-54-generic
-lrwxrwxrwx  1 root root       27 Mar  2 12:20 initrd.img.old -> initrd.img-6.8.0-54-generic
-drwx------  2 root root    16384 Mar  2 12:14 lost+found
--rw-------  1 root root 10067508 Feb 27 13:38 System.map-6.13.5-061305-generic
--rw-------  1 root root  9080742 Feb  7 21:09 System.map-6.8.0-54-generic
-lrwxrwxrwx  1 root root       29 Mar  2 13:55 vmlinuz -> vmlinuz-6.13.5-061305-generic
--rw-------  1 root root 15847936 Feb 27 13:38 vmlinuz-6.13.5-061305-generic
--rw-------  1 root root 14985608 Feb  7 22:01 vmlinuz-6.8.0-54-generic
-lrwxrwxrwx  1 root root       24 Mar  2 12:20 vmlinuz.old -> vmlinuz-6.8.0-54-generic
+              Name : ubuntu-otus:0  (local to host ubuntu-otus)
+              UUID : 8e9d172f:d98235b4:881ba584:2094dcd0
+            Events : 20
 
-dsavostyanov@ubuntu-otus:~/kernel$ sudo update-grub
-Sourcing file `/etc/default/grub'
-Generating grub configuration file ...
-Found linux image: /boot/vmlinuz-6.13.5-061305-generic
-Found initrd image: /boot/initrd.img-6.13.5-061305-generic
-Found linux image: /boot/vmlinuz-6.8.0-54-generic
-Found initrd image: /boot/initrd.img-6.8.0-54-generic
-Warning: os-prober will not be executed to detect other bootable partitions.
-Systems on them will not be added to the GRUB boot configuration.
-Check GRUB_DISABLE_OS_PROBER documentation entry.
-Adding boot menu entry for UEFI Firmware Settings ...
-done
-dsavostyanov@ubuntu-otus:~/kernel$ sudo grub-set-default 0
-dsavostyanov@ubuntu-otus:~/kernel$ sudo reboot now
+    Number   Major   Minor   RaidDevice State
+       0       8       16        0      active sync   /dev/sdb
+       1       8       32        1      active sync   /dev/sdc
+       -       0        0        2      removed
 
-dsavostyanov@ubuntu-otus:~$ uname -r
-6.13.5-061305-generic
+       3       8       48        -      faulty   /dev/sdd
+
+
+dsavostyanov@ubuntu-otus:~$ sudo mdadm /dev/md0 --remove /dev/sdd
+mdadm: hot removed /dev/sdd from /dev/md0
+
+dsavostyanov@ubuntu-otus:~$ sudo mdadm --examine /dev/sdd
+/dev/sdd:
+          Magic : a92b4efc
+        Version : 1.2
+    Feature Map : 0x0
+     Array UUID : 8e9d172f:d98235b4:881ba584:2094dcd0
+           Name : ubuntu-otus:0  (local to host ubuntu-otus)
+  Creation Time : Wed Mar 12 20:51:35 2025
+     Raid Level : raid5
+   Raid Devices : 3
+
+ Avail Dev Size : 2093056 sectors (1022.00 MiB 1071.64 MB)
+     Array Size : 2093056 KiB (2044.00 MiB 2143.29 MB)
+    Data Offset : 4096 sectors
+   Super Offset : 8 sectors
+   Unused Space : before=4016 sectors, after=0 sectors
+          State : clean
+    Device UUID : 864936d7:84e472b5:3d6d674b:a43b7696
+
+    Update Time : Wed Mar 12 21:05:17 2025
+  Bad Block Log : 512 entries available at offset 16 sectors
+       Checksum : 3887233b - correct
+         Events : 40
+
+         Layout : left-symmetric
+     Chunk Size : 512K
+
+   Device Role : Active device 2
+   Array State : AAA ('A' == active, '.' == missing, 'R' == replacing)
+
+
+dsavostyanov@ubuntu-otus:~$ sudo mdadm --zero-superblock --force /dev/sdd
+
+dsavostyanov@ubuntu-otus:~$ sudo mdadm --zero-superblock --force /dev/sdd
+mdadm: Unrecognised md component device - /dev/sdd
+
+dsavostyanov@ubuntu-otus:~$ cat /proc/mdstat
+Personalities : [linear] [raid0] [raid1] [raid6] [raid5] [raid4] [raid10]
+md0 : active raid5 sdd[3] sdc[1] sdb[0]
+      2093056 blocks super 1.2 level 5, 512k chunk, algorithm 2 [3/3] [UUU]
+
+unused devices: <none>
+dsavostyanov@ubuntu-otus:~$ sudo mdadm -D /dev/md0
+/dev/md0:
+           Version : 1.2
+     Creation Time : Wed Mar 12 20:51:35 2025
+        Raid Level : raid5
+        Array Size : 2093056 (2044.00 MiB 2143.29 MB)
+     Used Dev Size : 1046528 (1022.00 MiB 1071.64 MB)
+      Raid Devices : 3
+     Total Devices : 3
+       Persistence : Superblock is persistent
+
+       Update Time : Wed Mar 12 21:09:59 2025
+             State : clean
+    Active Devices : 3
+   Working Devices : 3
+    Failed Devices : 0
+     Spare Devices : 0
+
+            Layout : left-symmetric
+        Chunk Size : 512K
+
+Consistency Policy : resync
+
+              Name : ubuntu-otus:0  (local to host ubuntu-otus)
+              UUID : 8e9d172f:d98235b4:881ba584:2094dcd0
+            Events : 62
+
+    Number   Major   Minor   RaidDevice State
+       0       8       16        0      active sync   /dev/sdb
+       1       8       32        1      active sync   /dev/sdc
+       3       8       48        2      active sync   /dev/sdd
+
+
+dsavostyanov@ubuntu-otus:~$ sudo parted -s /dev/md0 mklabel gpt
+
+dsavostyanov@ubuntu-otus:~$ sudo parted /dev/md0 mkpart primary ext4 0% 20%
+Information: You may need to update /etc/fstab.
+
+dsavostyanov@ubuntu-otus:~$ sudo parted /dev/md0 mkpart primary ext4 20% 40%
+Information: You may need to update /etc/fstab.
+
+dsavostyanov@ubuntu-otus:~$ sudo parted /dev/md0 mkpart primary ext4 40% 60%
+Information: You may need to update /etc/fstab.
+
+dsavostyanov@ubuntu-otus:~$ sudo parted /dev/md0 mkpart primary ext4 60% 80%
+Information: You may need to update /etc/fstab.
+
+dsavostyanov@ubuntu-otus:~$ sudo parted /dev/md0 mkpart primary ext4 80% 100%
+Information: You may need to update /etc/fstab.
+
+dsavostyanov@ubuntu-otus:~$ for i in $(seq 1 5); do sudo mkfs.ext4 /dev/md0p$i; done
+mke2fs 1.47.0 (5-Feb-2023)
+Creating filesystem with 104448 4k blocks and 104448 inodes
+Filesystem UUID: ee655f79-2c84-4c1c-801f-60d3bddb1d78
+Superblock backups stored on blocks:
+        32768, 98304
+
+Allocating group tables: done
+Writing inode tables: done
+Creating journal (4096 blocks): done
+Writing superblocks and filesystem accounting information: done
+
+mke2fs 1.47.0 (5-Feb-2023)
+Creating filesystem with 104704 4k blocks and 104704 inodes
+Filesystem UUID: 6b75a204-b709-4685-a2c9-de47e7f4397a
+Superblock backups stored on blocks:
+        32768, 98304
+
+Allocating group tables: done
+Writing inode tables: done
+Creating journal (4096 blocks): done
+Writing superblocks and filesystem accounting information: done
+
+mke2fs 1.47.0 (5-Feb-2023)
+Creating filesystem with 104448 4k blocks and 104448 inodes
+Filesystem UUID: 30fc5aa7-aaca-4036-8256-aa0111cbe95e
+Superblock backups stored on blocks:
+        32768, 98304
+
+Allocating group tables: done
+Writing inode tables: done
+Creating journal (4096 blocks): done
+Writing superblocks and filesystem accounting information: done
+
+mke2fs 1.47.0 (5-Feb-2023)
+Creating filesystem with 104704 4k blocks and 104704 inodes
+Filesystem UUID: e4d21032-917c-422a-a559-56e86876003f
+Superblock backups stored on blocks:
+        32768, 98304
+
+Allocating group tables: done
+Writing inode tables: done
+Creating journal (4096 blocks): done
+Writing superblocks and filesystem accounting information: done
+
+mke2fs 1.47.0 (5-Feb-2023)
+Creating filesystem with 104448 4k blocks and 104448 inodes
+Filesystem UUID: 77ffa145-89f4-42df-831d-c6f95ccc0051
+Superblock backups stored on blocks:
+        32768, 98304
+
+Allocating group tables: done
+Writing inode tables: done
+Creating journal (4096 blocks): done
+Writing superblocks and filesystem accounting information: done
+
+dsavostyanov@ubuntu-otus:~$ sudo mkdir -p /raid/part{1,2,3,4,5}
+
+dsavostyanov@ubuntu-otus:~$ for i in $(seq 1 5); do sudo mount /dev/md0p$i /raid/part$i; done
+
 ```

@@ -1,131 +1,295 @@
-# Обновление ядра системы
+# Работа с NFS
 ```
-dsavostyanov@ubuntu-otus:~$ uname -r
-6.8.0-54-generic
+NFS server:
 
-dsavostyanov@ubuntu-otus:~$ mkdir kernel && cd kernel
+root@otus2:~# apt install nfs-kernel-server
+Reading package lists... Done
+Building dependency tree... Done
+Reading state information... Done
+The following additional packages will be installed:
+  keyutils libnfsidmap1 nfs-common rpcbind
+Suggested packages:
+  watchdog
+The following NEW packages will be installed:
+  keyutils libnfsidmap1 nfs-common nfs-kernel-server rpcbind
+0 upgraded, 5 newly installed, 0 to remove and 49 not upgraded.
+Need to get 569 kB of archives.
+After this operation, 2,022 kB of additional disk space will be used.
+Do you want to continue? [Y/n] y
+Get:1 http://cy.archive.ubuntu.com/ubuntu noble-updates/main amd64 libnfsidmap1 amd64 1:2.6.4-3ubuntu5.1 [48.3 kB]
+Get:2 http://cy.archive.ubuntu.com/ubuntu noble/main amd64 rpcbind amd64 1.2.6-7ubuntu2 [46.5 kB]
+Get:3 http://cy.archive.ubuntu.com/ubuntu noble/main amd64 keyutils amd64 1.6.3-3build1 [56.8 kB]
+Get:4 http://cy.archive.ubuntu.com/ubuntu noble-updates/main amd64 nfs-common amd64 1:2.6.4-3ubuntu5.1 [248 kB]
+Get:5 http://cy.archive.ubuntu.com/ubuntu noble-updates/main amd64 nfs-kernel-server amd64 1:2.6.4-3ubuntu5.1 [169 kB]
+Fetched 569 kB in 1s (508 kB/s)
+Selecting previously unselected package libnfsidmap1:amd64.
+(Reading database ... 86650 files and directories currently installed.)
+Preparing to unpack .../libnfsidmap1_1%3a2.6.4-3ubuntu5.1_amd64.deb ...
+Unpacking libnfsidmap1:amd64 (1:2.6.4-3ubuntu5.1) ...
+Selecting previously unselected package rpcbind.
+Preparing to unpack .../rpcbind_1.2.6-7ubuntu2_amd64.deb ...
+Unpacking rpcbind (1.2.6-7ubuntu2) ...
+Selecting previously unselected package keyutils.
+Preparing to unpack .../keyutils_1.6.3-3build1_amd64.deb ...
+Unpacking keyutils (1.6.3-3build1) ...
+Selecting previously unselected package nfs-common.
+Preparing to unpack .../nfs-common_1%3a2.6.4-3ubuntu5.1_amd64.deb ...
+Unpacking nfs-common (1:2.6.4-3ubuntu5.1) ...
+Selecting previously unselected package nfs-kernel-server.
+Preparing to unpack .../nfs-kernel-server_1%3a2.6.4-3ubuntu5.1_amd64.deb ...
+Unpacking nfs-kernel-server (1:2.6.4-3ubuntu5.1) ...
+Setting up libnfsidmap1:amd64 (1:2.6.4-3ubuntu5.1) ...
+Setting up rpcbind (1.2.6-7ubuntu2) ...
+Created symlink /etc/systemd/system/multi-user.target.wants/rpcbind.service → /usr/lib/systemd/system/rpcbind.service.
+Created symlink /etc/systemd/system/sockets.target.wants/rpcbind.socket → /usr/lib/systemd/system/rpcbind.socket.
+Setting up keyutils (1.6.3-3build1) ...
+Setting up nfs-common (1:2.6.4-3ubuntu5.1) ...
 
-dsavostyanov@ubuntu-otus:~/kernel$ wget https://kernel.ubuntu.com/mainline/v6.13.5/amd64/linux-headers-6.13.5-061305-generic_6.13.5-061305.202502271338_amd64.deb
---2025-03-02 13:49:29--  https://kernel.ubuntu.com/mainline/v6.13.5/amd64/linux-headers-6.13.5-061305-generic_6.13.5-061305.202502271338_amd64.deb
-Resolving kernel.ubuntu.com (kernel.ubuntu.com)... 185.125.189.74, 185.125.189.76, 185.125.189.75
-Connecting to kernel.ubuntu.com (kernel.ubuntu.com)|185.125.189.74|:443... connected.
-HTTP request sent, awaiting response... 200 OK
-Length: 3827358 (3.6M) [application/x-debian-package]
-Saving to: ‘linux-headers-6.13.5-061305-generic_6.13.5-061305.202502271338_amd64.deb’
+Creating config file /etc/idmapd.conf with new version
 
-linux-headers-6.13.5-061305-generic_6.13.5-0613 100%[=====================================================================================================>]   3.65M  2.65MB/s    in 1.4s
+Creating config file /etc/nfs.conf with new version
+info: Selecting UID from range 100 to 999 ...
 
-2025-03-02 13:49:34 (2.65 MB/s) - ‘linux-headers-6.13.5-061305-generic_6.13.5-061305.202502271338_amd64.deb’ saved [3827358/3827358]
+info: Adding system user `statd' (UID 111) ...
+info: Adding new user `statd' (UID 111) with group `nogroup' ...
+info: Not creating home directory `/var/lib/nfs'.
+Created symlink /etc/systemd/system/multi-user.target.wants/nfs-client.target → /usr/lib/systemd/system/nfs-client.target.
+Created symlink /etc/systemd/system/remote-fs.target.wants/nfs-client.target → /usr/lib/systemd/system/nfs-client.target.
+auth-rpcgss-module.service is a disabled or a static unit, not starting it.
+nfs-idmapd.service is a disabled or a static unit, not starting it.
+nfs-utils.service is a disabled or a static unit, not starting it.
+proc-fs-nfsd.mount is a disabled or a static unit, not starting it.
+rpc-gssd.service is a disabled or a static unit, not starting it.
+rpc-statd-notify.service is a disabled or a static unit, not starting it.
+rpc-statd.service is a disabled or a static unit, not starting it.
+rpc-svcgssd.service is a disabled or a static unit, not starting it.
+Setting up nfs-kernel-server (1:2.6.4-3ubuntu5.1) ...
+Created symlink /etc/systemd/system/nfs-mountd.service.requires/fsidd.service → /usr/lib/systemd/system/fsidd.service.
+Created symlink /etc/systemd/system/nfs-server.service.requires/fsidd.service → /usr/lib/systemd/system/fsidd.service.
+Created symlink /etc/systemd/system/nfs-client.target.wants/nfs-blkmap.service → /usr/lib/systemd/system/nfs-blkmap.service.
+Created symlink /etc/systemd/system/multi-user.target.wants/nfs-server.service → /usr/lib/systemd/system/nfs-server.service.
+nfs-mountd.service is a disabled or a static unit, not starting it.
+nfsdcld.service is a disabled or a static unit, not starting it.
 
-dsavostyanov@ubuntu-otus:~/kernel$ wget https://kernel.ubuntu.com/mainline/v6.13.5/amd64/linux-headers-6.13.5-061305_6.13.5-061305.202502271338_all.deb
---2025-03-02 13:49:46--  https://kernel.ubuntu.com/mainline/v6.13.5/amd64/linux-headers-6.13.5-061305_6.13.5-061305.202502271338_all.deb
-Resolving kernel.ubuntu.com (kernel.ubuntu.com)... 185.125.189.74, 185.125.189.75, 185.125.189.76
-Connecting to kernel.ubuntu.com (kernel.ubuntu.com)|185.125.189.74|:443... connected.
-HTTP request sent, awaiting response... 200 OK
-Length: 13885596 (13M) [application/x-debian-package]
-Saving to: ‘linux-headers-6.13.5-061305_6.13.5-061305.202502271338_all.deb’
+Creating config file /etc/exports with new version
 
-linux-headers-6.13.5-061305_6.13.5-061305.20250 100%[=====================================================================================================>]  13.24M  5.11MB/s    in 2.6s
+Creating config file /etc/default/nfs-kernel-server with new version
+Processing triggers for man-db (2.12.0-4build2) ...
+Processing triggers for libc-bin (2.39-0ubuntu8.4) ...
+Scanning processes...
+Scanning linux images...
 
-2025-03-02 13:49:50 (5.11 MB/s) - ‘linux-headers-6.13.5-061305_6.13.5-061305.202502271338_all.deb’ saved [13885596/13885596]
+Running kernel seems to be up-to-date.
 
-dsavostyanov@ubuntu-otus:~/kernel$ https://kernel.ubuntu.com/mainline/v6.13.5/amd64/linux-image-unsigned-6.13.5-061305-generic_6.13.5-061305.202502271338_amd64.deb
--bash: https://kernel.ubuntu.com/mainline/v6.13.5/amd64/linux-image-unsigned-6.13.5-061305-generic_6.13.5-061305.202502271338_amd64.deb: No such file or directory
-dsavostyanov@ubuntu-otus:~/kernel$ wget https://kernel.ubuntu.com/mainline/v6.13.5/amd64/linux-image-unsigned-6.13.5-061305-generic_6.13.5-061305.202502271338_amd64.deb
---2025-03-02 13:50:39--  https://kernel.ubuntu.com/mainline/v6.13.5/amd64/linux-image-unsigned-6.13.5-061305-generic_6.13.5-061305.202502271338_amd64.deb
-Resolving kernel.ubuntu.com (kernel.ubuntu.com)... 185.125.189.75, 185.125.189.76, 185.125.189.74
-Connecting to kernel.ubuntu.com (kernel.ubuntu.com)|185.125.189.75|:443... connected.
-HTTP request sent, awaiting response... 200 OK
-Length: 15882432 (15M) [application/x-debian-package]
-Saving to: ‘linux-image-unsigned-6.13.5-061305-generic_6.13.5-061305.202502271338_amd64.deb’
+No services need to be restarted.
 
-linux-image-unsigned-6.13.5-061305-generic_6.13 100%[=====================================================================================================>]  15.15M  3.00MB/s    in 5.1s
+No containers need to be restarted.
 
-2025-03-02 13:50:45 (2.97 MB/s) - ‘linux-image-unsigned-6.13.5-061305-generic_6.13.5-061305.202502271338_amd64.deb’ saved [15882432/15882432]
+No user sessions are running outdated binaries.
 
-dsavostyanov@ubuntu-otus:~/kernel$ wget https://kernel.ubuntu.com/mainline/v6.13.5/amd64/linux-modules-6.13.5-061305-generic_6.13.5-061305.202502271338_amd64.deb
---2025-03-02 13:51:16--  https://kernel.ubuntu.com/mainline/v6.13.5/amd64/linux-modules-6.13.5-061305-generic_6.13.5-061305.202502271338_amd64.deb
-Resolving kernel.ubuntu.com (kernel.ubuntu.com)... 185.125.189.76, 185.125.189.75, 185.125.189.74
-Connecting to kernel.ubuntu.com (kernel.ubuntu.com)|185.125.189.76|:443... connected.
-HTTP request sent, awaiting response... 200 OK
-Length: 191344832 (182M) [application/x-debian-package]
-Saving to: ‘linux-modules-6.13.5-061305-generic_6.13.5-061305.202502271338_amd64.deb’
+No VM guests are running outdated hypervisor (qemu) binaries on this host.
 
-linux-modules-6.13.5-061305-generic_6.13.5-0613 100%[=====================================================================================================>] 182.48M  2.65MB/s    in 52s
+root@otus2:~# ss -tnplu
+Netid       State        Recv-Q       Send-Q                      Local Address:Port                Peer Address:Port       Process
+udp         UNCONN       0            0                                 0.0.0.0:51103                    0.0.0.0:*           users:(("rpc.mountd",pid=2180,fd=12))
+udp         UNCONN       0            0                              127.0.0.54:53                       0.0.0.0:*           users:(("systemd-resolve",pid=587,fd=16))
+udp         UNCONN       0            0                           127.0.0.53%lo:53                       0.0.0.0:*           users:(("systemd-resolve",pid=587,fd=14))
+udp         UNCONN       0            0                   192.168.63.187%enp0s3:68                       0.0.0.0:*           users:(("systemd-network",pid=847,fd=22))
+udp         UNCONN       0            0                                 0.0.0.0:111                      0.0.0.0:*           users:(("rpcbind",pid=1665,fd=5),("systemd",pid=1,fd=140))
+udp         UNCONN       0            0                               127.0.0.1:649                      0.0.0.0:*           users:(("rpc.statd",pid=2169,fd=5))
+udp         UNCONN       0            0                                 0.0.0.0:60272                    0.0.0.0:*           users:(("rpc.mountd",pid=2180,fd=8))
+udp         UNCONN       0            0                                 0.0.0.0:56689                    0.0.0.0:*           users:(("rpc.mountd",pid=2180,fd=4))
+udp         UNCONN       0            0                                 0.0.0.0:34463                    0.0.0.0:*           users:(("rpc.statd",pid=2169,fd=8))
+udp         UNCONN       0            0                                 0.0.0.0:38618                    0.0.0.0:*
+udp         UNCONN       0            0                                    [::]:59314                       [::]:*           users:(("rpc.mountd",pid=2180,fd=6))
+udp         UNCONN       0            0                                    [::]:111                         [::]:*           users:(("rpcbind",pid=1665,fd=7),("systemd",pid=1,fd=143))
+udp         UNCONN       0            0                                    [::]:33205                       [::]:*           users:(("rpc.statd",pid=2169,fd=10))
+udp         UNCONN       0            0                                    [::]:58062                       [::]:*           users:(("rpc.mountd",pid=2180,fd=14))
+udp         UNCONN       0            0                                    [::]:42137                       [::]:*
+udp         UNCONN       0            0                                    [::]:44475                       [::]:*           users:(("rpc.mountd",pid=2180,fd=10))
+tcp         LISTEN       0            4096                              0.0.0.0:36235                    0.0.0.0:*           users:(("rpc.mountd",pid=2180,fd=9))
+tcp         LISTEN       0            4096                           127.0.0.54:53                       0.0.0.0:*           users:(("systemd-resolve",pid=587,fd=17))
+tcp         LISTEN       0            4096                              0.0.0.0:111                      0.0.0.0:*           users:(("rpcbind",pid=1665,fd=4),("systemd",pid=1,fd=138))
+tcp         LISTEN       0            64                                0.0.0.0:2049                     0.0.0.0:*
+tcp         LISTEN       0            4096                        127.0.0.53%lo:53                       0.0.0.0:*           users:(("systemd-resolve",pid=587,fd=15))
+tcp         LISTEN       0            4096                              0.0.0.0:43255                    0.0.0.0:*           users:(("rpc.mountd",pid=2180,fd=5))
+tcp         LISTEN       0            4096                              0.0.0.0:59987                    0.0.0.0:*           users:(("rpc.statd",pid=2169,fd=9))
+tcp         LISTEN       0            64                                0.0.0.0:35381                    0.0.0.0:*
+tcp         LISTEN       0            4096                              0.0.0.0:35655                    0.0.0.0:*           users:(("rpc.mountd",pid=2180,fd=13))
+tcp         LISTEN       0            4096                                 [::]:44187                       [::]:*           users:(("rpc.mountd",pid=2180,fd=7))
+tcp         LISTEN       0            64                                   [::]:38373                       [::]:*
+tcp         LISTEN       0            4096                                 [::]:48727                       [::]:*           users:(("rpc.mountd",pid=2180,fd=11))
+tcp         LISTEN       0            4096                                 [::]:51023                       [::]:*           users:(("rpc.statd",pid=2169,fd=11))
+tcp         LISTEN       0            4096                                 [::]:111                         [::]:*           users:(("rpcbind",pid=1665,fd=6),("systemd",pid=1,fd=141))
+tcp         LISTEN       0            64                                   [::]:2049                        [::]:*
+tcp         LISTEN       0            4096                                    *:22                             *:*           users:(("sshd",pid=1313,fd=3),("systemd",pid=1,fd=186))
+tcp         LISTEN       0            4096                                 [::]:51519                       [::]:*           users:(("rpc.mountd",pid=2180,fd=15))
 
-2025-03-02 13:52:09 (3.49 MB/s) - ‘linux-modules-6.13.5-061305-generic_6.13.5-061305.202502271338_amd64.deb’ saved [191344832/191344832]
+root@otus2:~# mkdir -p /srv/share/upload
 
-dsavostyanov@ubuntu-otus:~/kernel$ sudo dpkg -i *.deb
-[sudo] password for dsavostyanov:
-Selecting previously unselected package linux-headers-6.13.5-061305.
-(Reading database ... 86644 files and directories currently installed.)
-Preparing to unpack linux-headers-6.13.5-061305_6.13.5-061305.202502271338_all.deb ...
-Unpacking linux-headers-6.13.5-061305 (6.13.5-061305.202502271338) ...
-Selecting previously unselected package linux-headers-6.13.5-061305-generic.
-Preparing to unpack linux-headers-6.13.5-061305-generic_6.13.5-061305.202502271338_amd64.deb ...
-Unpacking linux-headers-6.13.5-061305-generic (6.13.5-061305.202502271338) ...
-Selecting previously unselected package linux-image-unsigned-6.13.5-061305-generic.
-Preparing to unpack linux-image-unsigned-6.13.5-061305-generic_6.13.5-061305.202502271338_amd64.deb ...
-Unpacking linux-image-unsigned-6.13.5-061305-generic (6.13.5-061305.202502271338) ...
-Selecting previously unselected package linux-modules-6.13.5-061305-generic.
-Preparing to unpack linux-modules-6.13.5-061305-generic_6.13.5-061305.202502271338_amd64.deb ...
-Unpacking linux-modules-6.13.5-061305-generic (6.13.5-061305.202502271338) ...
-Setting up linux-headers-6.13.5-061305 (6.13.5-061305.202502271338) ...
-Setting up linux-headers-6.13.5-061305-generic (6.13.5-061305.202502271338) ...
-Setting up linux-modules-6.13.5-061305-generic (6.13.5-061305.202502271338) ...
-Setting up linux-image-unsigned-6.13.5-061305-generic (6.13.5-061305.202502271338) ...
-I: /boot/vmlinuz is now a symlink to vmlinuz-6.13.5-061305-generic
-I: /boot/initrd.img is now a symlink to initrd.img-6.13.5-061305-generic
-Processing triggers for linux-image-unsigned-6.13.5-061305-generic (6.13.5-061305.202502271338) ...
-/etc/kernel/postinst.d/initramfs-tools:
-update-initramfs: Generating /boot/initrd.img-6.13.5-061305-generic
-/etc/kernel/postinst.d/zz-update-grub:
-Sourcing file `/etc/default/grub'
-Generating grub configuration file ...
-Found linux image: /boot/vmlinuz-6.13.5-061305-generic
-Found initrd image: /boot/initrd.img-6.13.5-061305-generic
-Found linux image: /boot/vmlinuz-6.8.0-54-generic
-Found initrd image: /boot/initrd.img-6.8.0-54-generic
-Warning: os-prober will not be executed to detect other bootable partitions.
-Systems on them will not be added to the GRUB boot configuration.
-Check GRUB_DISABLE_OS_PROBER documentation entry.
-Adding boot menu entry for UEFI Firmware Settings ...
-done
+root@otus2:~# chown -R nobody:nogroup /srv/share
 
-dsavostyanov@ubuntu-otus:~/kernel$  ls -al /boot
-total 193472
-drwxr-xr-x  4 root root     4096 Mar  2 13:56 .
-drwxr-xr-x 23 root root     4096 Mar  2 12:13 ..
--rw-r--r--  1 root root   310720 Feb 27 13:38 config-6.13.5-061305-generic
--rw-r--r--  1 root root   287562 Feb  7 21:09 config-6.8.0-54-generic
-drwxr-xr-x  5 root root     4096 Mar  2 13:56 grub
-lrwxrwxrwx  1 root root       32 Mar  2 13:55 initrd.img -> initrd.img-6.13.5-061305-generic
--rw-r--r--  1 root root 78742093 Mar  2 13:56 initrd.img-6.13.5-061305-generic
--rw-r--r--  1 root root 68750099 Mar  2 12:21 initrd.img-6.8.0-54-generic
-lrwxrwxrwx  1 root root       27 Mar  2 12:20 initrd.img.old -> initrd.img-6.8.0-54-generic
-drwx------  2 root root    16384 Mar  2 12:14 lost+found
--rw-------  1 root root 10067508 Feb 27 13:38 System.map-6.13.5-061305-generic
--rw-------  1 root root  9080742 Feb  7 21:09 System.map-6.8.0-54-generic
-lrwxrwxrwx  1 root root       29 Mar  2 13:55 vmlinuz -> vmlinuz-6.13.5-061305-generic
--rw-------  1 root root 15847936 Feb 27 13:38 vmlinuz-6.13.5-061305-generic
--rw-------  1 root root 14985608 Feb  7 22:01 vmlinuz-6.8.0-54-generic
-lrwxrwxrwx  1 root root       24 Mar  2 12:20 vmlinuz.old -> vmlinuz-6.8.0-54-generic
+root@otus2:~# chmod 0777 /srv/share/upload
 
-dsavostyanov@ubuntu-otus:~/kernel$ sudo update-grub
-Sourcing file `/etc/default/grub'
-Generating grub configuration file ...
-Found linux image: /boot/vmlinuz-6.13.5-061305-generic
-Found initrd image: /boot/initrd.img-6.13.5-061305-generic
-Found linux image: /boot/vmlinuz-6.8.0-54-generic
-Found initrd image: /boot/initrd.img-6.8.0-54-generic
-Warning: os-prober will not be executed to detect other bootable partitions.
-Systems on them will not be added to the GRUB boot configuration.
-Check GRUB_DISABLE_OS_PROBER documentation entry.
-Adding boot menu entry for UEFI Firmware Settings ...
-done
-dsavostyanov@ubuntu-otus:~/kernel$ sudo grub-set-default 0
-dsavostyanov@ubuntu-otus:~/kernel$ sudo reboot now
+root@otus2:~# cat << EOF > /etc/exports
+/srv/share 192.168.63.44/32(rw,sync,root_squash)
+EOF
 
-dsavostyanov@ubuntu-otus:~$ uname -r
-6.13.5-061305-generic
+root@otus2:~# exportfs -r
+exportfs: /etc/exports [1]: Neither 'subtree_check' or 'no_subtree_check' specified for export "192.168.63.44/32:/srv/share".
+  Assuming default behaviour ('no_subtree_check').
+  NOTE: this default has changed since nfs-utils version 1.0.x
+
+root@otus2:~# exportfs -s
+/srv/share  192.168.63.44/32(sync,wdelay,hide,no_subtree_check,sec=sys,rw,secure,root_squash,no_all_squash)
+
+NFS client:
+
+root@otus:~# sudo apt install nfs-common
+Reading package lists... Done
+Building dependency tree... Done
+Reading state information... Done
+The following additional packages will be installed:
+  keyutils libnfsidmap1 rpcbind
+Suggested packages:
+  watchdog
+The following NEW packages will be installed:
+  keyutils libnfsidmap1 nfs-common rpcbind
+0 upgraded, 4 newly installed, 0 to remove and 49 not upgraded.
+Need to get 400 kB of archives.
+After this operation, 1,416 kB of additional disk space will be used.
+Do you want to continue? [Y/n] y
+Get:1 http://cy.archive.ubuntu.com/ubuntu noble-updates/main amd64 libnfsidmap1 amd64 1:2.6.4-3ubuntu5.1 [48.3 kB]
+Get:2 http://cy.archive.ubuntu.com/ubuntu noble/main amd64 rpcbind amd64 1.2.6-7ubuntu2 [46.5 kB]
+Get:3 http://cy.archive.ubuntu.com/ubuntu noble/main amd64 keyutils amd64 1.6.3-3build1 [56.8 kB]
+Get:4 http://cy.archive.ubuntu.com/ubuntu noble-updates/main amd64 nfs-common amd64 1:2.6.4-3ubuntu5.1 [248 kB]
+Fetched 400 kB in 2s (249 kB/s)
+Selecting previously unselected package libnfsidmap1:amd64.
+(Reading database ... 86650 files and directories currently installed.)
+Preparing to unpack .../libnfsidmap1_1%3a2.6.4-3ubuntu5.1_amd64.deb ...
+Unpacking libnfsidmap1:amd64 (1:2.6.4-3ubuntu5.1) ...
+Selecting previously unselected package rpcbind.
+Preparing to unpack .../rpcbind_1.2.6-7ubuntu2_amd64.deb ...
+Unpacking rpcbind (1.2.6-7ubuntu2) ...
+Selecting previously unselected package keyutils.
+Preparing to unpack .../keyutils_1.6.3-3build1_amd64.deb ...
+Unpacking keyutils (1.6.3-3build1) ...
+Selecting previously unselected package nfs-common.
+Preparing to unpack .../nfs-common_1%3a2.6.4-3ubuntu5.1_amd64.deb ...
+Unpacking nfs-common (1:2.6.4-3ubuntu5.1) ...
+Setting up libnfsidmap1:amd64 (1:2.6.4-3ubuntu5.1) ...
+Setting up rpcbind (1.2.6-7ubuntu2) ...
+Created symlink /etc/systemd/system/multi-user.target.wants/rpcbind.service → /usr/lib/systemd/system/rpcbind.service.
+Created symlink /etc/systemd/system/sockets.target.wants/rpcbind.socket → /usr/lib/systemd/system/rpcbind.socket.
+Setting up keyutils (1.6.3-3build1) ...
+Setting up nfs-common (1:2.6.4-3ubuntu5.1) ...
+
+Creating config file /etc/idmapd.conf with new version
+
+Creating config file /etc/nfs.conf with new version
+info: Selecting UID from range 100 to 999 ...
+
+info: Adding system user `statd' (UID 111) ...
+info: Adding new user `statd' (UID 111) with group `nogroup' ...
+info: Not creating home directory `/var/lib/nfs'.
+Created symlink /etc/systemd/system/multi-user.target.wants/nfs-client.target → /usr/lib/systemd/system/nfs-client.target.
+Created symlink /etc/systemd/system/remote-fs.target.wants/nfs-client.target → /usr/lib/systemd/system/nfs-client.target.
+auth-rpcgss-module.service is a disabled or a static unit, not starting it.
+nfs-idmapd.service is a disabled or a static unit, not starting it.
+nfs-utils.service is a disabled or a static unit, not starting it.
+proc-fs-nfsd.mount is a disabled or a static unit, not starting it.
+rpc-gssd.service is a disabled or a static unit, not starting it.
+rpc-statd-notify.service is a disabled or a static unit, not starting it.
+rpc-statd.service is a disabled or a static unit, not starting it.
+rpc-svcgssd.service is a disabled or a static unit, not starting it.
+Processing triggers for man-db (2.12.0-4build2) ...
+Processing triggers for libc-bin (2.39-0ubuntu8.4) ...
+Scanning processes...
+Scanning linux images...
+
+Running kernel seems to be up-to-date.
+
+No services need to be restarted.
+
+No containers need to be restarted.
+
+No user sessions are running outdated binaries.
+
+No VM guests are running outdated hypervisor (qemu) binaries on this host.
+
+root@otus:~# echo "192.168.63.187:/srv/share/ /mnt nfs vers=3,noauto,x-systemd.automount 0 0" >> /etc/fstab
+
+root@otus:~# systemctl daemon-reload
+
+root@otus:~# systemctl restart remote-fs.target
+
+root@otus:~# mount | grep mnt
+systemd-1 on /mnt type autofs (rw,relatime,fd=69,pgrp=1,timeout=0,minproto=5,maxproto=5,direct,pipe_ino=14695)
+
+Проверка работоспособности 
+
+root@otus2:~# cd /srv/share/upload/
+
+root@otus2:/srv/share/upload# touch check_file
+
+
+Заходим на клиент
+
+root@otus:/# cd /mnt/upload
+
+root@otus:/mnt/upload# touch client_file
+
+root@otus:/mnt/upload# ls -l
+total 0
+-rw-r--r-- 1 root   root    0 Mar 29 19:35 check_file
+-rw-r--r-- 1 nobody nogroup 0 Mar 29 19:42 client_file
+
+Предварительно проверяем клиент:
+
+root@otus:~# cd /mnt/upload
+
+root@otus:/mnt/upload# ls -l
+total 0
+-rw-r--r-- 1 root   root    0 Mar 29 19:35 check_file
+-rw-r--r-- 1 nobody nogroup 0 Mar 29 19:42 client_file
+
+Проверяем сервер:
+
+root@otus2:~# ls -l /srv/share/upload/
+total 0
+-rw-r--r-- 1 root   root    0 Mar 29 19:35 check_file
+-rw-r--r-- 1 nobody nogroup 0 Mar 29 19:42 client_file
+
+root@otus2:~# exportfs -s
+/srv/share  192.168.63.44/32(sync,wdelay,hide,no_subtree_check,sec=sys,rw,secure,root_squash,no_all_squash)
+
+root@otus2:~# showmount -a 192.168.63.187
+All mount points on 192.168.63.187:
+192.168.63.44:/srv/share
+
+Проверяем клиент:
+
+dsavostyanov@otus:~$ showmount -a 192.168.63.187
+All mount points on 192.168.63.187:
+192.168.63.44:/srv/share
+
+dsavostyanov@otus:~$ cd /mnt/upload
+
+dsavostyanov@otus:/mnt/upload$ mount | grep mnt
+systemd-1 on /mnt type autofs (rw,relatime,fd=66,pgrp=1,timeout=0,minproto=5,maxproto=5,direct,pipe_ino=4496)
+192.168.63.187:/srv/share/ on /mnt type nfs (rw,relatime,vers=3,rsize=524288,wsize=524288,namlen=255,hard,proto=tcp,timeo=600,retrans=2,sec=sys,mountaddr=192.168.63.187,mountvers=3,mountport=51103,mountproto=udp,local_lock=none,addr=192.168.63.187)
+
+dsavostyanov@otus:/mnt/upload$ ls -l
+total 0
+-rw-r--r-- 1 root   root    0 Mar 29 19:35 check_file
+-rw-r--r-- 1 nobody nogroup 0 Mar 29 19:42 client_file
+
+dsavostyanov@otus:/mnt/upload$ touch final_check
+
+dsavostyanov@otus:/mnt/upload$ ls -l
+total 0
+-rw-r--r-- 1 root         root         0 Mar 29 19:35 check_file
+-rw-r--r-- 1 nobody       nogroup      0 Mar 29 19:42 client_file
+-rw-rw-r-- 1 dsavostyanov dsavostyanov 0 Mar 29 19:54 final_check
+
 ```

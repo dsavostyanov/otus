@@ -1,7 +1,7 @@
 # Загрузка системы_Работа с загрузчиком
 ```
 Включить отображение меню Grub
-
+Скриншоты приложены
 dsavostyanov@otus:~$ sudo nano /etc/default/grub
 [sudo] password for dsavostyanov:
 

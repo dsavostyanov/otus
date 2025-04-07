@@ -1,131 +1,246 @@
-# Обновление ядра системы
+# Systemd — создание unit-файла
 ```
-dsavostyanov@ubuntu-otus:~$ uname -r
-6.8.0-54-generic
+root@otus1:~# touch /etc/default/watchlog /var/log/watchlog.log /opt/watchlog.sh /etc/systemd/system/watchlog.service /etc/systemd/system/watchlog.timer && chmod +x /opt/watchlog.sh
 
-dsavostyanov@ubuntu-otus:~$ mkdir kernel && cd kernel
+/etc/default/watchlog:
+# Configuration file for my watchlog service
+# Place it to /etc/default
 
-dsavostyanov@ubuntu-otus:~/kernel$ wget https://kernel.ubuntu.com/mainline/v6.13.5/amd64/linux-headers-6.13.5-061305-generic_6.13.5-061305.202502271338_amd64.deb
---2025-03-02 13:49:29--  https://kernel.ubuntu.com/mainline/v6.13.5/amd64/linux-headers-6.13.5-061305-generic_6.13.5-061305.202502271338_amd64.deb
-Resolving kernel.ubuntu.com (kernel.ubuntu.com)... 185.125.189.74, 185.125.189.76, 185.125.189.75
-Connecting to kernel.ubuntu.com (kernel.ubuntu.com)|185.125.189.74|:443... connected.
-HTTP request sent, awaiting response... 200 OK
-Length: 3827358 (3.6M) [application/x-debian-package]
-Saving to: ‘linux-headers-6.13.5-061305-generic_6.13.5-061305.202502271338_amd64.deb’
+# File and word in that file that we will be monit
+WORD="ALERT"
+LOG="/var/log/watchlog.log"
 
-linux-headers-6.13.5-061305-generic_6.13.5-0613 100%[=====================================================================================================>]   3.65M  2.65MB/s    in 1.4s
+/var/log/watchlog.log:
+dfs fsf alert
+asdasd ds  dfsf
+ALERT vv ll
+asad ALERT km
 
-2025-03-02 13:49:34 (2.65 MB/s) - ‘linux-headers-6.13.5-061305-generic_6.13.5-061305.202502271338_amd64.deb’ saved [3827358/3827358]
+/opt/watchlog.sh
+#!/bin/bash
 
-dsavostyanov@ubuntu-otus:~/kernel$ wget https://kernel.ubuntu.com/mainline/v6.13.5/amd64/linux-headers-6.13.5-061305_6.13.5-061305.202502271338_all.deb
---2025-03-02 13:49:46--  https://kernel.ubuntu.com/mainline/v6.13.5/amd64/linux-headers-6.13.5-061305_6.13.5-061305.202502271338_all.deb
-Resolving kernel.ubuntu.com (kernel.ubuntu.com)... 185.125.189.74, 185.125.189.75, 185.125.189.76
-Connecting to kernel.ubuntu.com (kernel.ubuntu.com)|185.125.189.74|:443... connected.
-HTTP request sent, awaiting response... 200 OK
-Length: 13885596 (13M) [application/x-debian-package]
-Saving to: ‘linux-headers-6.13.5-061305_6.13.5-061305.202502271338_all.deb’
+# Source variables from environment file
+. /etc/default/watchlog
 
-linux-headers-6.13.5-061305_6.13.5-061305.20250 100%[=====================================================================================================>]  13.24M  5.11MB/s    in 2.6s
+DATE=$(date)
 
-2025-03-02 13:49:50 (5.11 MB/s) - ‘linux-headers-6.13.5-061305_6.13.5-061305.202502271338_all.deb’ saved [13885596/13885596]
+if grep -q "$WORD" "$LOG"; then
+    logger "$DATE: I found the word '$WORD', Master!"
+else
+    exit 0
+fi
 
-dsavostyanov@ubuntu-otus:~/kernel$ https://kernel.ubuntu.com/mainline/v6.13.5/amd64/linux-image-unsigned-6.13.5-061305-generic_6.13.5-061305.202502271338_amd64.deb
--bash: https://kernel.ubuntu.com/mainline/v6.13.5/amd64/linux-image-unsigned-6.13.5-061305-generic_6.13.5-061305.202502271338_amd64.deb: No such file or directory
-dsavostyanov@ubuntu-otus:~/kernel$ wget https://kernel.ubuntu.com/mainline/v6.13.5/amd64/linux-image-unsigned-6.13.5-061305-generic_6.13.5-061305.202502271338_amd64.deb
---2025-03-02 13:50:39--  https://kernel.ubuntu.com/mainline/v6.13.5/amd64/linux-image-unsigned-6.13.5-061305-generic_6.13.5-061305.202502271338_amd64.deb
-Resolving kernel.ubuntu.com (kernel.ubuntu.com)... 185.125.189.75, 185.125.189.76, 185.125.189.74
-Connecting to kernel.ubuntu.com (kernel.ubuntu.com)|185.125.189.75|:443... connected.
-HTTP request sent, awaiting response... 200 OK
-Length: 15882432 (15M) [application/x-debian-package]
-Saving to: ‘linux-image-unsigned-6.13.5-061305-generic_6.13.5-061305.202502271338_amd64.deb’
 
-linux-image-unsigned-6.13.5-061305-generic_6.13 100%[=====================================================================================================>]  15.15M  3.00MB/s    in 5.1s
+/etc/systemd/system/watchlog.service
+[Unit]
+Description=My watchlog service
 
-2025-03-02 13:50:45 (2.97 MB/s) - ‘linux-image-unsigned-6.13.5-061305-generic_6.13.5-061305.202502271338_amd64.deb’ saved [15882432/15882432]
+[Service]
+Type=oneshot
+ExecStart=/opt/watchlog.sh
 
-dsavostyanov@ubuntu-otus:~/kernel$ wget https://kernel.ubuntu.com/mainline/v6.13.5/amd64/linux-modules-6.13.5-061305-generic_6.13.5-061305.202502271338_amd64.deb
---2025-03-02 13:51:16--  https://kernel.ubuntu.com/mainline/v6.13.5/amd64/linux-modules-6.13.5-061305-generic_6.13.5-061305.202502271338_amd64.deb
-Resolving kernel.ubuntu.com (kernel.ubuntu.com)... 185.125.189.76, 185.125.189.75, 185.125.189.74
-Connecting to kernel.ubuntu.com (kernel.ubuntu.com)|185.125.189.76|:443... connected.
-HTTP request sent, awaiting response... 200 OK
-Length: 191344832 (182M) [application/x-debian-package]
-Saving to: ‘linux-modules-6.13.5-061305-generic_6.13.5-061305.202502271338_amd64.deb’
+/etc/systemd/system/watchlog.timer
+[Unit]
+Description=Run watchlog script every 30 second
 
-linux-modules-6.13.5-061305-generic_6.13.5-0613 100%[=====================================================================================================>] 182.48M  2.65MB/s    in 52s
+[Timer]
+OnUnitActiveSec=30
+Unit=watchlog.service
 
-2025-03-02 13:52:09 (3.49 MB/s) - ‘linux-modules-6.13.5-061305-generic_6.13.5-061305.202502271338_amd64.deb’ saved [191344832/191344832]
+[Install]
+WantedBy=multi-user.target
 
-dsavostyanov@ubuntu-otus:~/kernel$ sudo dpkg -i *.deb
-[sudo] password for dsavostyanov:
-Selecting previously unselected package linux-headers-6.13.5-061305.
-(Reading database ... 86644 files and directories currently installed.)
-Preparing to unpack linux-headers-6.13.5-061305_6.13.5-061305.202502271338_all.deb ...
-Unpacking linux-headers-6.13.5-061305 (6.13.5-061305.202502271338) ...
-Selecting previously unselected package linux-headers-6.13.5-061305-generic.
-Preparing to unpack linux-headers-6.13.5-061305-generic_6.13.5-061305.202502271338_amd64.deb ...
-Unpacking linux-headers-6.13.5-061305-generic (6.13.5-061305.202502271338) ...
-Selecting previously unselected package linux-image-unsigned-6.13.5-061305-generic.
-Preparing to unpack linux-image-unsigned-6.13.5-061305-generic_6.13.5-061305.202502271338_amd64.deb ...
-Unpacking linux-image-unsigned-6.13.5-061305-generic (6.13.5-061305.202502271338) ...
-Selecting previously unselected package linux-modules-6.13.5-061305-generic.
-Preparing to unpack linux-modules-6.13.5-061305-generic_6.13.5-061305.202502271338_amd64.deb ...
-Unpacking linux-modules-6.13.5-061305-generic (6.13.5-061305.202502271338) ...
-Setting up linux-headers-6.13.5-061305 (6.13.5-061305.202502271338) ...
-Setting up linux-headers-6.13.5-061305-generic (6.13.5-061305.202502271338) ...
-Setting up linux-modules-6.13.5-061305-generic (6.13.5-061305.202502271338) ...
-Setting up linux-image-unsigned-6.13.5-061305-generic (6.13.5-061305.202502271338) ...
-I: /boot/vmlinuz is now a symlink to vmlinuz-6.13.5-061305-generic
-I: /boot/initrd.img is now a symlink to initrd.img-6.13.5-061305-generic
-Processing triggers for linux-image-unsigned-6.13.5-061305-generic (6.13.5-061305.202502271338) ...
-/etc/kernel/postinst.d/initramfs-tools:
-update-initramfs: Generating /boot/initrd.img-6.13.5-061305-generic
-/etc/kernel/postinst.d/zz-update-grub:
-Sourcing file `/etc/default/grub'
-Generating grub configuration file ...
-Found linux image: /boot/vmlinuz-6.13.5-061305-generic
-Found initrd image: /boot/initrd.img-6.13.5-061305-generic
-Found linux image: /boot/vmlinuz-6.8.0-54-generic
-Found initrd image: /boot/initrd.img-6.8.0-54-generic
-Warning: os-prober will not be executed to detect other bootable partitions.
-Systems on them will not be added to the GRUB boot configuration.
-Check GRUB_DISABLE_OS_PROBER documentation entry.
-Adding boot menu entry for UEFI Firmware Settings ...
-done
+root@otus1:~# systemctl status watchlog.timer
+● watchlog.timer - Run watchlog script every 30 second
+     Loaded: loaded (/etc/systemd/system/watchlog.timer; disabled; preset: enabled)
+     Active: active (waiting) since Fri 2025-04-04 15:03:22 UTC; 3min 50s ago
+    Trigger: Fri 2025-04-04 15:07:38 UTC; 25s left
+   Triggers: ● watchlog.service
 
-dsavostyanov@ubuntu-otus:~/kernel$  ls -al /boot
-total 193472
-drwxr-xr-x  4 root root     4096 Mar  2 13:56 .
-drwxr-xr-x 23 root root     4096 Mar  2 12:13 ..
--rw-r--r--  1 root root   310720 Feb 27 13:38 config-6.13.5-061305-generic
--rw-r--r--  1 root root   287562 Feb  7 21:09 config-6.8.0-54-generic
-drwxr-xr-x  5 root root     4096 Mar  2 13:56 grub
-lrwxrwxrwx  1 root root       32 Mar  2 13:55 initrd.img -> initrd.img-6.13.5-061305-generic
--rw-r--r--  1 root root 78742093 Mar  2 13:56 initrd.img-6.13.5-061305-generic
--rw-r--r--  1 root root 68750099 Mar  2 12:21 initrd.img-6.8.0-54-generic
-lrwxrwxrwx  1 root root       27 Mar  2 12:20 initrd.img.old -> initrd.img-6.8.0-54-generic
-drwx------  2 root root    16384 Mar  2 12:14 lost+found
--rw-------  1 root root 10067508 Feb 27 13:38 System.map-6.13.5-061305-generic
--rw-------  1 root root  9080742 Feb  7 21:09 System.map-6.8.0-54-generic
-lrwxrwxrwx  1 root root       29 Mar  2 13:55 vmlinuz -> vmlinuz-6.13.5-061305-generic
--rw-------  1 root root 15847936 Feb 27 13:38 vmlinuz-6.13.5-061305-generic
--rw-------  1 root root 14985608 Feb  7 22:01 vmlinuz-6.8.0-54-generic
-lrwxrwxrwx  1 root root       24 Mar  2 12:20 vmlinuz.old -> vmlinuz-6.8.0-54-generic
+Apr 04 15:03:22 otus1 systemd[1]: Stopped watchlog.timer - Run watchlog script every 30 second.
+Apr 04 15:03:22 otus1 systemd[1]: Stopping watchlog.timer - Run watchlog script every 30 second...
+Apr 04 15:03:22 otus1 systemd[1]: Started watchlog.timer - Run watchlog script every 30 second.
 
-dsavostyanov@ubuntu-otus:~/kernel$ sudo update-grub
-Sourcing file `/etc/default/grub'
-Generating grub configuration file ...
-Found linux image: /boot/vmlinuz-6.13.5-061305-generic
-Found initrd image: /boot/initrd.img-6.13.5-061305-generic
-Found linux image: /boot/vmlinuz-6.8.0-54-generic
-Found initrd image: /boot/initrd.img-6.8.0-54-generic
-Warning: os-prober will not be executed to detect other bootable partitions.
-Systems on them will not be added to the GRUB boot configuration.
-Check GRUB_DISABLE_OS_PROBER documentation entry.
-Adding boot menu entry for UEFI Firmware Settings ...
-done
-dsavostyanov@ubuntu-otus:~/kernel$ sudo grub-set-default 0
-dsavostyanov@ubuntu-otus:~/kernel$ sudo reboot now
+root@otus1:~# tail -n 1000 /var/log/syslog  | grep Master
+2025-04-04T15:05:59.587003+00:00 otus1 root: Fri Apr  4 03:05:59 PM UTC 2025: I found the word 'ALERT', Master!
+2025-04-04T15:06:37.280688+00:00 otus1 root: Fri Apr  4 03:06:37 PM UTC 2025: I found the word 'ALERT', Master!
+2025-04-04T15:07:08.338726+00:00 otus1 root: Fri Apr  4 03:07:08 PM UTC 2025: I found the word 'ALERT', Master!
 
-dsavostyanov@ubuntu-otus:~$ uname -r
-6.13.5-061305-generic
+
+root@otus1:~# apt install spawn-fcgi php php-cgi php-cli \
+ apache2 libapache2-mod-fcgid -y
+
+
+root@otus1:~# mkdir -p /etc/spawn-fcgi
+
+root@otus1:~# touch /etc/spawn-fcgi/fcgi.conf /etc/systemd/system/spawn-fcgi.service
+
+/etc/spawn-fcgi/fcgi.conf:
+# You must set some working options before the "spawn-fcgi" service will work.
+# If SOCKET points to a file, then this file is cleaned up by the init script.
+#
+# See spawn-fcgi(1) for all possible options.
+#
+# Example :
+SOCKET=/var/run/php-fcgi.sock
+OPTIONS="-u www-data -g www-data -s $SOCKET -S -M 0600 -C 32 -F 1 -- /usr/bin/php-cgi"
+
+
+
+/etc/systemd/system/spawn-fcgi.service:
+[Unit]
+Description=Spawn-fcgi startup service by Otus
+After=network.target
+
+[Service]
+Type=simple
+PIDFile=/var/run/spawn-fcgi.pid
+EnvironmentFile=/etc/spawn-fcgi/fcgi.conf
+ExecStart=/usr/bin/spawn-fcgi -n $OPTIONS
+KillMode=process
+
+[Install]
+WantedBy=multi-user.target
+
+
+
+root@otus1:~# systemctl start spawn-fcgi
+
+root@otus1:~# systemctl status spawn-fcgi
+● spawn-fcgi.service - Spawn-fcgi startup service by Otus
+     Loaded: loaded (/etc/systemd/system/spawn-fcgi.service; disabled; preset: enabled)
+     Active: active (running) since Sun 2025-04-06 18:59:22 UTC; 9s ago
+   Main PID: 11253 (php-cgi)
+      Tasks: 33 (limit: 2272)
+     Memory: 14.7M (peak: 15.1M)
+        CPU: 245ms
+     CGroup: /system.slice/spawn-fcgi.service
+             ├─11253 /usr/bin/php-cgi
+             ├─11258 /usr/bin/php-cgi
+             ├─11259 /usr/bin/php-cgi
+             ├─11260 /usr/bin/php-cgi
+             ├─11261 /usr/bin/php-cgi
+             ├─11262 /usr/bin/php-cgi
+             ├─11263 /usr/bin/php-cgi
+             ├─11264 /usr/bin/php-cgi
+             ├─11265 /usr/bin/php-cgi
+             ├─11266 /usr/bin/php-cgi
+             ├─11267 /usr/bin/php-cgi
+             ├─11268 /usr/bin/php-cgi
+             ├─11269 /usr/bin/php-cgi
+             ├─11270 /usr/bin/php-cgi
+             ├─11271 /usr/bin/php-cgi
+             ├─11272 /usr/bin/php-cgi
+             ├─11273 /usr/bin/php-cgi
+             ├─11274 /usr/bin/php-cgi
+             ├─11275 /usr/bin/php-cgi
+             ├─11276 /usr/bin/php-cgi
+             ├─11277 /usr/bin/php-cgi
+             ├─11278 /usr/bin/php-cgi
+             ├─11279 /usr/bin/php-cgi
+             ├─11280 /usr/bin/php-cgi
+             ├─11281 /usr/bin/php-cgi
+             ├─11282 /usr/bin/php-cgi
+             ├─11283 /usr/bin/php-cgi
+             ├─11284 /usr/bin/php-cgi
+             ├─11285 /usr/bin/php-cgi
+             ├─11286 /usr/bin/php-cgi
+             ├─11287 /usr/bin/php-cgi
+             ├─11288 /usr/bin/php-cgi
+             └─11289 /usr/bin/php-cgi
+
+Apr 06 18:59:22 otus1 systemd[1]: Started spawn-fcgi.service - Spawn-fcgi startup service by Otus.
+
+root@otus1:~# apt install nginx -y
+
+/etc/systemd/system/nginx@.service:
+# Stop dance for nginx
+# =======================
+#
+# ExecStop sends SIGSTOP (graceful stop) to the nginx process.
+# If, after 5s (--retry QUIT/5) nginx is still running, systemd takes control
+# and sends SIGTERM (fast shutdown) to the main process.
+# After another 5s (TimeoutStopSec=5), and if nginx is alive, systemd sends
+# SIGKILL to all the remaining processes in the process group (KillMode=mixed).
+#
+# nginx signals reference doc:
+# http://nginx.org/en/docs/control.html
+#
+[Unit]
+Description=A high performance web server and a reverse proxy server
+Documentation=man:nginx(8)
+After=network.target nss-lookup.target
+
+[Service]
+Type=forking
+PIDFile=/run/nginx-%I.pid
+ExecStartPre=/usr/sbin/nginx -t -c /etc/nginx/nginx-%I.conf -q -g 'daemon on; master_process on;'
+ExecStart=/usr/sbin/nginx -c /etc/nginx/nginx-%I.conf -g 'daemon on; master_process on;'
+ExecReload=/usr/sbin/nginx -c /etc/nginx/nginx-%I.conf -g 'daemon on; master_process on;' -s reload
+ExecStop=-/sbin/start-stop-daemon --quiet --stop --retry QUIT/5 --pidfile /run/nginx-%I.pid
+TimeoutStopSec=5
+KillMode=mixed
+
+[Install]
+WantedBy=multi-user.target
+
+root@otus1:~# cp /etc/nginx/nginx.conf /etc/nginx/nginx-first.conf
+
+root@otus1:~# cp /etc/nginx/nginx.conf /etc/nginx/nginx-second.conf
+
+root@otus1:~# systemctl start nginx@first
+
+root@otus1:~# systemctl start nginx@second
+
+root@otus1:~# systemctl status nginx@first
+● nginx@first.service - A high performance web server and a reverse proxy server
+     Loaded: loaded (/etc/systemd/system/nginx@.service; disabled; preset: enabled)
+     Active: active (running) since Sun 2025-04-06 19:07:58 UTC; 3min 5s ago
+       Docs: man:nginx(8)
+    Process: 11647 ExecStartPre=/usr/sbin/nginx -t -c /etc/nginx/nginx-first.conf -q -g daemon on; master_process on; (code=exited, status=0/SUCCESS)
+    Process: 11648 ExecStart=/usr/sbin/nginx -c /etc/nginx/nginx-first.conf -g daemon on; master_process on; (code=exited, status=0/SUCCESS)
+   Main PID: 11650 (nginx)
+      Tasks: 3 (limit: 2272)
+     Memory: 2.3M (peak: 2.8M)
+        CPU: 68ms
+     CGroup: /system.slice/system-nginx.slice/nginx@first.service
+             ├─11650 "nginx: master process /usr/sbin/nginx -c /etc/nginx/nginx-first.conf -g daemon on; master_process on;"
+             ├─11651 "nginx: worker process"
+             └─11652 "nginx: worker process"
+
+Apr 06 19:07:58 otus1 systemd[1]: Starting nginx@first.service - A high performance web server and a reverse proxy server...
+Apr 06 19:07:58 otus1 systemd[1]: Started nginx@first.service - A high performance web server and a reverse proxy server.
+
+root@otus1:~# systemctl status nginx@second
+● nginx@second.service - A high performance web server and a reverse proxy server
+     Loaded: loaded (/etc/systemd/system/nginx@.service; disabled; preset: enabled)
+     Active: active (running) since Sun 2025-04-06 19:10:18 UTC; 50s ago
+       Docs: man:nginx(8)
+    Process: 11786 ExecStartPre=/usr/sbin/nginx -t -c /etc/nginx/nginx-second.conf -q -g daemon on; master_process on; (code=exited, status=0/SUCCESS)
+    Process: 11789 ExecStart=/usr/sbin/nginx -c /etc/nginx/nginx-second.conf -g daemon on; master_process on; (code=exited, status=0/SUCCESS)
+   Main PID: 11795 (nginx)
+      Tasks: 3 (limit: 2272)
+     Memory: 2.4M (peak: 2.5M)
+        CPU: 66ms
+     CGroup: /system.slice/system-nginx.slice/nginx@second.service
+             ├─11795 "nginx: master process /usr/sbin/nginx -c /etc/nginx/nginx-second.conf -g daemon on; master_process on;"
+             ├─11796 "nginx: worker process"
+             └─11797 "nginx: worker process"
+
+Apr 06 19:10:18 otus1 systemd[1]: Starting nginx@second.service - A high performance web server and a reverse proxy server...
+Apr 06 19:10:18 otus1 systemd[1]: Started nginx@second.service - A high performance web server and a reverse proxy server.
+
+
+root@otus1:~# ss -tnulp | grep nginx
+tcp   LISTEN 0      511                   0.0.0.0:9002      0.0.0.0:*    users:(("nginx",pid=11797,fd=5),("nginx",pid=11796,fd=5),("nginx",pid=11795,fd=5))                 
+tcp   LISTEN 0      511                   0.0.0.0:9001      0.0.0.0:*    users:(("nginx",pid=11652,fd=5),("nginx",pid=11651,fd=5),("nginx",pid=11650,fd=5))                 
+
+root@otus1:~# ps afx | grep nginx
+  11823 pts/6    S+     0:00                                      \_ grep --color=auto nginx
+  11650 ?        Ss     0:00 nginx: master process /usr/sbin/nginx -c /etc/nginx/nginx-first.conf -g daemon on; master_process on;
+  11651 ?        S      0:00  \_ nginx: worker process
+  11652 ?        S      0:00  \_ nginx: worker process
+  11795 ?        Ss     0:00 nginx: master process /usr/sbin/nginx -c /etc/nginx/nginx-second.conf -g daemon on; master_process on;
+  11796 ?        S      0:00  \_ nginx: worker process
+  11797 ?        S      0:00  \_ nginx: worker process
 ```

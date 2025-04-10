@@ -1,4 +1,4 @@
-# Обновление ядра системы
+# Пишем скрипт
 ```
 dsavostyanov@ubuntu-otus:~$ uname -r
 6.8.0-54-generic

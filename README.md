@@ -1,5 +1,7 @@
 # ДЗ: Работа с процессами
 ```
+ps_ax1.py:
+
 #!/usr/bin/env python3
 import os
 

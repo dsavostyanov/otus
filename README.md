@@ -16,7 +16,7 @@ def list_processes():
             try:
                 with open(f"/proc/{pid}/stat", "r") as f:
                     stat_content = f.read().split()
-                    states.append(stat_content[2])  # Process state
+                    states.append(stat_content[2])  
             except Exception:
                 states.append("N/A")
             

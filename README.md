@@ -59,24 +59,11 @@ Bringing machine 'kernel-update' up with 'virtualbox' provider...
 [vagrant@kernel-update ~]$ uname -r
 4.18.0-516.el8.x86_64
 
-[vagrant@kernel-update ~]$ cat /etc/yum.repos.d/CentOS-Stream-AppStream.repo
-# CentOS-Stream-AppStream.repo
-#
-# The mirrorlist system uses the connecting IP address of the client and the
-# update status of each mirror to pick current mirrors that are geographically
-# close to the client.  You should use this for CentOS updates unless you are
-# manually picking other mirrors.
-#
-# If the mirrorlist does not work for you, you can try the commented out
-# baseurl line instead.
-
-[appstream]
-name=CentOS Stream $releasever - AppStream
-mirrorlist=http://mirrorlist.centos.org/?release=$stream&arch=$basearch&repo=AppStream&infra=$infra
-#baseurl=http://mirror.centos.org/$contentdir/$stream/AppStream/$basearch/os/
-gpgcheck=1
-enabled=1
-gpgkey=file:///etc/pki/rpm-gpg/RPM-GPG-KEY-centosofficial
+[vagrant@kernel-update ~]$ sudo yum install -y https://www.elrepo.org/elrepo-release-8.el8.elrepo.noarch.rpm
+CentOS Stream 8 - AppStream                                                                                                                                                                                  0.0  B/s |   0  B     00:02
+Errors during downloading metadata for repository 'appstream':
+  - Curl error (6): Couldn't resolve host name for http://mirrorlist.centos.org/?release=8-stream&arch=x86_64&repo=AppStream&infra=stock [Could not resolve host: mirrorlist.centos.org]
+Error: Failed to download metadata for repo 'appstream': Cannot prepare internal mirrorlist: Curl error (6): Couldn't resolve host name for http://mirrorlist.centos.org/?release=8-stream&arch=x86_64&repo=AppStream&infra=stock [Could not resolve host: mirrorlist.centos.org]
 
 [vagrant@kernel-update ~]$ sudo -i
 
